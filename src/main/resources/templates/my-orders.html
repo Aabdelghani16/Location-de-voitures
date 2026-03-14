@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Commandes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        .navbar {
+            background: #1a1a2e;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+        .navbar a:hover { color: #e94560; }
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e94560;
+            margin-left: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            color: #1a1a2e;
+        }
+        h2 {
+            font-size: 22px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+            display: inline-block;
+        }
+        .section { margin-bottom: 50px; }
+        .order-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .order-info {
+            flex: 1;
+        }
+        .order-car {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+        .order-detail {
+            font-size: 14px;
+            color: #666;
+            margin-top: 6px;
+        }
+        .order-meta {
+            text-align: right;
+        }
+        .order-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        .order-status {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            color: #999;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="/cars" class="logo">AutoLoc</a>
+    <div>
+        <a href="/cars">Voitures</a>
+        <a href="/cars/my-orders">Mes Commandes</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Mes Commandes</h1>
+
+    <div class="section">
+        <h2>Achats</h2>
+
+        <div th:each="purchase : ${purchases}" class="order-card">
+            <div class="order-info">
+                <div class="order-car" th:text="${purchase.car.brand + ' ' + purchase.car.model}"></div>
+                <div class="order-detail">
+                    Achat du <span th:text="${purchase.purchaseDate}"></span>
+                </div>
+            </div>
+            <div class="order-meta">
+                <div class="order-price" th:text="${purchase.price + ' €'}"></div>
+                <span class="order-status"
+                      th:classappend="${purchase.status == 'CONFIRMED' ? 'status-confirmed' : (purchase.status == 'PENDING' ? 'status-pending' : 'status-cancelled')}"
+                      th:text="${purchase.status}"></span>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(purchases)}" class="empty-message">
+            Aucun achat pour le moment.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Locations</h2>
+
+        <div th:each="rental : ${rentals}" class="order-card">
+            <div class="order-info">
+                <div class="order-car" th:text="${rental.car.brand + ' ' + rental.car.model}"></div>
+                <div class="order-detail">
+                    Du <span th:text="${rental.startDate}"></span> au <span th:text="${rental.endDate}"></span>
+                </div>
+            </div>
+            <div class="order-meta">
+                <div class="order-price" th:text="${rental.totalPrice + ' €'}"></div>
+                <span class="order-status"
+                      th:classappend="${rental.status == 'CONFIRMED' ? 'status-confirmed' : (rental.status == 'PENDING' ? 'status-pending' : 'status-cancelled')}"
+                      th:text="${rental.status}"></span>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(rentals)}" class="empty-message">
+            Aucune location pour le moment.
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

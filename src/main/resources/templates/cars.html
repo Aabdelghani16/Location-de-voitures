@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nos Voitures</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        .navbar {
+            background: #1a1a2e;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+        .navbar a:hover { color: #e94560; }
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e94560;
+            margin-left: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            color: #1a1a2e;
+        }
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .car-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .car-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .car-image {
+            width: 100%;
+            height: 200px;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #999;
+        }
+        .car-body {
+            padding: 20px;
+        }
+        .car-brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+        .car-model {
+            font-size: 16px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .car-description {
+            font-size: 14px;
+            color: #888;
+            margin-top: 8px;
+        }
+        .car-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        .car-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e94560;
+        }
+        .car-type {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .type-sale { background: #d4edda; color: #155724; }
+        .type-rent { background: #cce5ff; color: #004085; }
+        .car-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .btn-buy { background: #e94560; color: #fff; }
+        .btn-buy:hover { background: #c73a52; }
+        .btn-rent { background: #1a1a2e; color: #fff; }
+        .btn-rent:hover { background: #16213e; }
+        .badge-unavailable {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .rent-form {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .rent-form label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-top: 8px;
+        }
+        .rent-form input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+        .rent-form .btn {
+            margin-top: 12px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state p {
+            font-size: 18px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="/cars" class="logo">AutoLoc</a>
+    <div>
+        <a href="/cars">Voitures</a>
+        <a href="/cars/my-orders">Mes Commandes</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Nos Voitures</h1>
+
+    <div class="cars-grid" th:if="${!cars.isEmpty()}">
+        <div class="car-card" th:each="car : ${cars}">
+            <div class="car-image">&#128663;</div>
+            <div class="car-body">
+                <div class="car-brand" th:text="${car.brand}"></div>
+                <div class="car-model" th:text="${car.model}"></div>
+                <div class="car-description" th:text="${car.description}" th:if="${car.description}"></div>
+
+                <div class="car-info">
+                    <span class="car-price" th:if="${car.type == 'SALE'}" th:text="${car.salePrice + ' €'}"></span>
+                    <span class="car-price" th:if="${car.type == 'RENT'}" th:text="${car.rentalPrice + ' €/jour'}"></span>
+                    <span class="car-type type-sale" th:if="${car.type == 'SALE'}">Vente</span>
+                    <span class="car-type type-rent" th:if="${car.type == 'RENT'}">Location</span>
+                </div>
+
+                <div th:if="${car.available}" class="car-actions">
+                    <form th:if="${car.type == 'SALE'}" th:action="@{/cars/buy/{id}(id=${car.id})}" method="post" style="flex:1">
+                        <button type="submit" class="btn btn-buy" style="width:100%">Acheter</button>
+                    </form>
+
+                    <div th:if="${car.type == 'RENT'}" style="flex:1">
+                        <button class="btn btn-rent" style="width:100%" onclick="this.parentElement.querySelector('.rent-form').style.display='block'; this.style.display='none';">Louer</button>
+                        <div class="rent-form">
+                            <form th:action="@{/cars/rent/{id}(id=${car.id})}" method="post">
+                                <label>Date de début
+                                    <input type="date" name="startDate" required>
+                                </label>
+                                <label>Date de fin
+                                    <input type="date" name="endDate" required>
+                                </label>
+                                <button type="submit" class="btn btn-rent" style="width:100%">Confirmer la location</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:unless="${car.available}" class="car-actions">
+                    <span class="badge-unavailable">Indisponible</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${cars.isEmpty()}">
+        <div style="font-size:64px">&#128663;</div>
+        <p>Aucune voiture disponible pour le moment.</p>
+    </div>
+</div>
+
+</body>
+</html>
