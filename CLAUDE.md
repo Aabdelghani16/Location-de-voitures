@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Prerequisites
 
 - Java 17
-- PostgreSQL running on localhost:5432 with database `car_rental` (user: postgres)
+- PostgreSQL running on localhost:5433 with database `car_rental` (user: postgres, password: chk)
 
 ## Architecture
 
@@ -24,7 +24,7 @@ Spring Boot 4.0.3 MVC application with server-side rendering (Thymeleaf) and Spr
 ### Domain Model
 
 Four JPA entities in `org.example.carrental.model`:
-- **User** — has `role` field (ADMIN/CLIENT), unique email
+- **User** — has `role` field (ADMIN/CLIENT), unique email, used as Spring Security principal
 - **Car** — has `type` field (SALE/RENT), tracks availability, has both `salePrice` and `rentalPrice`
 - **Rental** — links User↔Car with date range, totalPrice, status
 - **Purchase** — links User↔Car with purchaseDate, price, status
@@ -32,16 +32,34 @@ Four JPA entities in `org.example.carrental.model`:
 ### Key Packages
 
 - `model/` — JPA entities with Lombok annotations (@Data, @NoArgsConstructor, @AllArgsConstructor)
-- `repository/` — Spring Data JPA repositories (UserRepository has custom `findByEmail`)
-- `service/` — Business logic (currently only CarService is implemented)
-- `controller/` — MVC controllers (stub — not yet implemented)
-- `dto/` — Data transfer objects (stub — not yet implemented)
-- `config/` — Configuration classes (stub — not yet implemented)
+- `repository/` — Spring Data JPA repositories (UserRepository has custom `findByEmail`, RentalRepository/PurchaseRepository have `findByUser`)
+- `service/` — Business logic (currently only CarService with CRUD operations)
+- `controller/` — MVC controllers: CarController (`/cars`), AdminController (`/admin`), LoginController (`/login`)
+- `dto/` — Data transfer objects (empty — not yet implemented)
+- `config/` — SecurityConfig (role-based access, custom login page) and DataInitializer (seeds admin/client users)
 
-### Current State
+### Security
 
-The data layer (models + repositories) is complete. Service, controller, DTO, and security configuration layers are scaffolded but mostly unimplemented. Spring Security is on the classpath but has no custom configuration, so default security applies.
+- SecurityConfig uses BCrypt password encoding with email as the username field
+- `/admin/**` requires ADMIN role; `/cars/**` requires ADMIN or CLIENT role
+- Custom login page at `/login`, default redirect to `/cars` on success
+- DataInitializer seeds two users: `ad@min.com`/admin (ADMIN) and `cli@ent.com`/client (CLIENT)
+
+### Application Flow
+
+1. Unauthenticated users are redirected to `/login`
+2. After login, users land on `/cars` (car listing)
+3. CLIENT users can buy (SALE cars) or rent (RENT cars with date picker), and view orders at `/cars/my-orders`
+4. ADMIN users can access `/admin` to add/delete cars
+
+### Current Gaps
+
+- No UserService, RentalService, or PurchaseService — CarController accesses repositories directly for rentals/purchases
+- No DTOs — domain entities passed directly to views
+- No input validation or global error handling
+- Buying/renting does not update `car.available` flag
+- Only a context-load test exists; no unit or integration tests
 
 ## Database
 
-PostgreSQL with Hibernate `ddl-auto=update` (auto-creates/updates tables). SQL logging is enabled (`show-sql=true`).
+PostgreSQL with Hibernate `ddl-auto=update` (auto-creates/updates tables). SQL logging is enabled (`show-sql=true`). Thymeleaf cache is disabled for development.

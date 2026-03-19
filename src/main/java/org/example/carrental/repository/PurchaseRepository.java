@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByUser(User user);
+    void deleteByCar_Id(Long carId);
 }

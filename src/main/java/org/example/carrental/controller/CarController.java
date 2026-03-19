@@ -49,7 +49,7 @@ public class CarController {
         purchase.setUser(user);
         purchase.setPurchaseDate(LocalDate.now());
         purchase.setPrice(car.getSalePrice());
-        purchase.setStatus("CONFIRMED");
+        purchase.setStatus("PENDING");
 
         purchaseRepository.save(purchase);
 
@@ -73,7 +73,7 @@ public class CarController {
         rental.setStartDate(startDate);
         rental.setEndDate(endDate);
         rental.setTotalPrice(total);
-        rental.setStatus("CONFIRMED");
+        rental.setStatus("PENDING");
 
         rentalRepository.save(rental);
 

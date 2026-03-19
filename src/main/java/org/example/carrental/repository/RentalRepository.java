@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findByUser(User user);
+    void deleteByCar_Id(Long carId);
 }

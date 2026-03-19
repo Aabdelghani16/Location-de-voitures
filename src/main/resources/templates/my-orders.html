@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -118,6 +119,10 @@
     <div>
         <a href="/cars">Voitures</a>
         <a href="/cars/my-orders">Mes Commandes</a>
+        <a href="/admin" sec:authorize="hasRole('ADMIN')">Administration</a>
+        <form th:action="@{/logout}" method="post" style="display:inline; margin-left:20px;">
+            <button type="submit" style="background:#e94560; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold;">Déconnexion</button>
+        </form>
     </div>
 </nav>
 

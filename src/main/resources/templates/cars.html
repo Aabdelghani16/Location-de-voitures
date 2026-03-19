@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -179,6 +180,10 @@
     <div>
         <a href="/cars">Voitures</a>
         <a href="/cars/my-orders">Mes Commandes</a>
+        <a href="/admin" sec:authorize="hasRole('ADMIN')">Administration</a>
+        <form th:action="@{/logout}" method="post" style="display:inline; margin-left:20px;">
+            <button type="submit" style="background:#e94560; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold;">Déconnexion</button>
+        </form>
     </div>
 </nav>
 
@@ -187,7 +192,8 @@
 
     <div class="cars-grid" th:if="${!cars.isEmpty()}">
         <div class="car-card" th:each="car : ${cars}">
-            <div class="car-image">&#128663;</div>
+            <img th:if="${car.image != null and !car.image.isEmpty()}" th:src="${car.image}" alt="Photo" class="car-image" style="object-fit:cover;"/>
+            <img th:if="${car.image == null or car.image.isEmpty()}" src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=200&fit=crop" alt="Voiture" class="car-image" style="object-fit:cover;"/>
             <div class="car-body">
                 <div class="car-brand" th:text="${car.brand}"></div>
                 <div class="car-model" th:text="${car.model}"></div>
