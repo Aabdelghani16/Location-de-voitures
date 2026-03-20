@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Administration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        .navbar {
+            background: #1a1a2e;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+        .navbar a:hover { color: #e94560; }
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e94560;
+            margin-left: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            color: #1a1a2e;
+        }
+        h2 {
+            font-size: 22px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e94560;
+            display: inline-block;
+        }
+        .section { margin-bottom: 50px; }
+
+        /* Form */
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .btn-submit {
+            grid-column: 1 / -1;
+            padding: 12px;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background: #c73a52; }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        thead { background: #1a1a2e; }
+        thead th {
+            color: #fff;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 14px;
+        }
+        tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        tbody tr:hover { background: #f8f9fa; }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-sale { background: #d4edda; color: #155724; }
+        .badge-rent { background: #cce5ff; color: #004085; }
+        .badge-available { background: #d4edda; color: #155724; }
+        .badge-unavailable { background: #f8d7da; color: #721c24; }
+        .btn-delete {
+            padding: 6px 14px;
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-delete:hover { background: #b02a37; }
+        .btn-edit {
+            padding: 6px 14px;
+            background: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 6px;
+        }
+        .btn-edit:hover { background: #e0a800; }
+        .btn-cancel {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #6c757d;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .btn-cancel:hover { background: #565e64; }
+        .btn-confirm {
+            padding: 6px 14px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 6px;
+        }
+        .btn-confirm:hover { background: #1e7e34; }
+        .btn-refuse {
+            padding: 6px 14px;
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-refuse:hover { background: #b02a37; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-processing { background: #cce5ff; color: #004085; }
+        .badge-confirmed { background: #d4edda; color: #155724; }
+        .badge-cancelled { background: #f8d7da; color: #721c24; }
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            color: #999;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="/cars" class="logo">AutoLoc</a>
+    <div>
+        <a href="/cars">Voitures</a>
+        <a href="/admin">Administration</a>
+        <a href="/cars/my-orders">Mes Commandes</a>
+        <form th:action="@{/logout}" method="post" style="display:inline; margin-left:20px;">
+            <button type="submit" style="background:#e94560; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold;">Déconnexion</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Administration</h1>
+
+    <div class="section">
+        <h2 th:text="${car.id != null ? 'Modifier une voiture' : 'Ajouter une voiture'}">Ajouter une voiture</h2>
+        <div class="form-card">
+            <form th:action="${car.id != null ? '/admin/edit/' + car.id : '/admin/add'}" method="post" th:object="${car}">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Marque</label>
+                        <input type="text" th:field="*{brand}" placeholder="Ex: Toyota" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Modèle</label>
+                        <input type="text" th:field="*{model}" placeholder="Ex: Corolla" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select th:field="*{type}" required>
+                            <option value="">-- Choisir --</option>
+                            <option value="SALE">Vente</option>
+                            <option value="RENT">Location</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Prix de vente (€)</label>
+                        <input type="number" th:field="*{salePrice}" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Prix de location (€/jour)</label>
+                        <input type="number" th:field="*{rentalPrice}" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Image (URL)</label>
+                        <input type="text" th:field="*{image}" placeholder="Ex: bmw3.jpg">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Description</label>
+                        <textarea th:field="*{description}" placeholder="Description de la voiture..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit" th:text="${car.id != null ? 'Enregistrer les modifications' : 'Ajouter la voiture'}">Ajouter la voiture</button>
+                    <a th:if="${car.id != null}" href="/admin" class="btn-cancel">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Voitures existantes</h2>
+
+        <table th:if="${!cars.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>Type</th>
+                    <th>Prix vente</th>
+                    <th>Prix location</th>
+                    <th>Disponible</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="c : ${cars}">
+                    <td th:text="${c.id}"></td>
+                    <td th:text="${c.brand}"></td>
+                    <td th:text="${c.model}"></td>
+                    <td>
+                        <span class="badge badge-sale" th:if="${c.type == 'SALE'}">Vente</span>
+                        <span class="badge badge-rent" th:if="${c.type == 'RENT'}">Location</span>
+                    </td>
+                    <td th:text="${c.salePrice + ' €'}"></td>
+                    <td th:text="${c.rentalPrice + ' €/jour'}"></td>
+                    <td>
+                        <span class="badge badge-available" th:if="${c.available}">Oui</span>
+                        <span class="badge badge-unavailable" th:unless="${c.available}">Non</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/edit/{id}(id=${c.id})}" class="btn-edit">Modifier</a>
+                        <form th:action="@{/admin/delete/{id}(id=${c.id})}" method="post" style="display:inline">
+                            <button type="submit" class="btn-delete">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${cars.isEmpty()}" class="empty-message">
+            Aucune voiture enregistrée.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Commandes d'achat</h2>
+
+        <table th:if="${!purchases.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>N° Compte</th>
+                    <th>Voiture</th>
+                    <th>Date</th>
+                    <th>Prix</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${purchases}">
+                    <td th:text="${p.user.name + ' (' + p.user.email + ')'}"></td>
+                    <td th:text="${p.user.numeroCompte}"></td>
+                    <td th:text="${p.car.brand + ' ' + p.car.model}"></td>
+                    <td th:text="${p.purchaseDate}"></td>
+                    <td th:text="${p.price + ' €'}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${p.status == 'PENDING' ? 'badge-pending' : (p.status == 'PROCESSING' ? 'badge-processing' : (p.status == 'CONFIRMED' ? 'badge-confirmed' : 'badge-cancelled'))}"
+                              th:text="${p.status}"></span>
+                    </td>
+                    <td>
+                        <div th:if="${p.status == 'PENDING'}">
+                            <form th:action="@{/admin/purchase/confirm/{id}(id=${p.id})}" method="post" style="display:inline">
+                                <button type="submit" class="btn-confirm">Valider</button>
+                            </form>
+                            <form th:action="@{/admin/purchase/cancel/{id}(id=${p.id})}" method="post" style="display:inline">
+                                <button type="submit" class="btn-refuse">Refuser</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${purchases.isEmpty()}" class="empty-message">
+            Aucune commande d'achat.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Commandes de location</h2>
+
+        <table th:if="${!rentals.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>N° Compte</th>
+                    <th>Voiture</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Prix total</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${rentals}">
+                    <td th:text="${r.user.name + ' (' + r.user.email + ')'}"></td>
+                    <td th:text="${r.user.numeroCompte}"></td>
+                    <td th:text="${r.car.brand + ' ' + r.car.model}"></td>
+                    <td th:text="${r.startDate}"></td>
+                    <td th:text="${r.endDate}"></td>
+                    <td th:text="${r.totalPrice + ' €'}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${r.status == 'PENDING' ? 'badge-pending' : (r.status == 'PROCESSING' ? 'badge-processing' : (r.status == 'CONFIRMED' ? 'badge-confirmed' : 'badge-cancelled'))}"
+                              th:text="${r.status}"></span>
+                    </td>
+                    <td>
+                        <div th:if="${r.status == 'PENDING'}">
+                            <form th:action="@{/admin/rental/confirm/{id}(id=${r.id})}" method="post" style="display:inline">
+                                <button type="submit" class="btn-confirm">Valider</button>
+                            </form>
+                            <form th:action="@{/admin/rental/cancel/{id}(id=${r.id})}" method="post" style="display:inline">
+                                <button type="submit" class="btn-refuse">Refuser</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${rentals.isEmpty()}" class="empty-message">
+            Aucune commande de location.
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
