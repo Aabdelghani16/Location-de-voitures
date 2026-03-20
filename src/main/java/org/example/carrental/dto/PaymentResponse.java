@@ -14,4 +14,36 @@ public class PaymentResponse implements Serializable {
     private String orderType; // RENTAL or PURCHASE
     private boolean success;
     private String message;
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
